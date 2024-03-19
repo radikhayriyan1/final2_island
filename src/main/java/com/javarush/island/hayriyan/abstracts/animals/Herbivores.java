@@ -9,12 +9,11 @@ import java.util.ArrayList;
 public abstract class Herbivores extends Animal {
     public void eat(Animal animal, Location location) {
         ArrayList<Plant> plants = location.plants;
-        Plant plant = null;
-        if (!plants.isEmpty()) {
-            plant = plants.get(0);
-        }
+        Plant plant = plants.stream().findFirst().orElse(null);
+
         if (plant != null) {
-            animal.weight += plant.weight > animal.satisfiedKg ? animal.satisfiedKg : plant.weight;
+            double amountToEat = Math.min(plant.weight, animal.satisfiedKg);
+            animal.weight += amountToEat;
             plant.die(plant, location);
         } else {
             animal.weight -= animal.weight / 10;

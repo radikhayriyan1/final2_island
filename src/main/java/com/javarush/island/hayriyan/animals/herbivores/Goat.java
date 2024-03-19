@@ -5,6 +5,8 @@ import com.javarush.island.hayriyan.abstracts.animals.Herbivores;
 import java.util.UUID;
 
 public class Goat extends Herbivores {
+
+    public static final String animalName = "goat";
     public Goat(UUID id) {
         this.id = id;
         this.image = "\uD83D\uDC10";
@@ -12,5 +14,6 @@ public class Goat extends Herbivores {
         this.weight = 60.0;
         this.minimumWeight = 40.0;
         this.name = "goat";
+        this.maxMoveCount = 3;
     }
 }
