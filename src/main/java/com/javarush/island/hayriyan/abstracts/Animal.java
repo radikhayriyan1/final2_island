@@ -37,7 +37,7 @@ public abstract class Animal {
             }
         }
         Simulation.locations[newX][newY].animals.add(animal);
-    };
+    }
     public void multiply(Animal animal, ArrayList<Animal> animals) {
         try {
             ArrayList<Animal> sameAnimals = animals.stream()
@@ -51,8 +51,8 @@ public abstract class Animal {
         } catch (Exception e) {
             System.out.println("Failed to create Animal: " + e.getMessage());
         }
-    };
+    }
     public void die(Animal animal, Location location) {
         location.animals = location.animals.stream().filter(a -> a.id != animal.id).collect(Collectors.toCollection(ArrayList::new));
-    };
+    }
 }

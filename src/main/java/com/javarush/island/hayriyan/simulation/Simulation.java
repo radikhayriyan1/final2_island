@@ -18,7 +18,7 @@ public class Simulation {
                     Integer count = entry.getValue();
                     createAnimalList(animals, animal, count);
                 }
-                createPlantList(plants, Settings.PLANTS_COUNT);
+                createPlantList(plants);
                 locations[i][j] = new Location(
                         animals,
                         plants,
@@ -46,7 +46,7 @@ public class Simulation {
             public void run() {
                 for (Location[] location : locations) {
                     for (Location value : location) {
-                        createPlantList(value.plants, Settings.PLANTS_COUNT);
+                        createPlantList(value.plants);
                     }
                 }
             }
@@ -100,7 +100,7 @@ public class Simulation {
                 Simulation.showResult();
             }
         }, 2000, 2000);
-    };
+    }
 
     public static void showResult() {
         for (Location[] location : locations) {
@@ -110,7 +110,7 @@ public class Simulation {
             System.out.println();
         }
         System.out.println();
-    };
+    }
 
     public static void createAnimalList(ArrayList<Animal> animals, Class<?> animal, Integer count) {
         try {
@@ -120,11 +120,11 @@ public class Simulation {
         } catch (Exception e) {
             System.out.println("Failed to create Animal: " + e.getMessage());
         }
-    };
+    }
 
-    private static void createPlantList(ArrayList<Plant> plants, Integer count) {
-        for (int i = 0; i < count; i++) {
+    private static void createPlantList(ArrayList<Plant> plants) {
+        for (int i = 0; i < Settings.PLANTS_COUNT; i++) {
             plants.add(new Plant(UUID.randomUUID()));
         }
-    };
+    }
 }

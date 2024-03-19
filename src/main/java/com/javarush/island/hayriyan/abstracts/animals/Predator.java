@@ -34,7 +34,7 @@ public abstract class Predator extends Animal {
         if (animal.weight <= animal.minimumWeight) {
             animal.die(animal, location);
         }
-    };
+    }
 
     private Herbivores getPriorityHerbivorous(List<Herbivores> herbivores, Predator predator ) {
         Map<String, Integer> currentPredatorPriority = Settings.PREDATOR_PRIORITY.get(predator.name);

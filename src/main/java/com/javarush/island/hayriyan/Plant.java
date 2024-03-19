@@ -15,5 +15,5 @@ public class Plant {
 
     public void die(Plant plant, Location location) {
         location.plants.removeIf(p -> p.id == plant.id);
-    };
+    }
 }

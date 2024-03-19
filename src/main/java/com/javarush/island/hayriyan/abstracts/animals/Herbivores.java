@@ -21,5 +21,5 @@ public abstract class Herbivores extends Animal {
         if (animal.weight <= animal.minimumWeight) {
             animal.die(animal, location);
         }
-    };
+    }
 }
