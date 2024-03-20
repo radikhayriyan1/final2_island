@@ -1,16 +1,17 @@
-package com.javarush.island.hayriyan.simulation;
-
-import com.javarush.island.hayriyan.Plant;
+package com.javarush.island.hayriyan.island;
+import com.javarush.island.hayriyan.abstracts.animals.Herbivores;
+import com.javarush.island.hayriyan.abstracts.animals.Predator;
+import com.javarush.island.hayriyan.objects.Plant;
 import com.javarush.island.hayriyan.abstracts.Animal;
-
+import com.javarush.island.hayriyan.config.Settings;
 import java.util.*;
 
 public class Simulation {
 
-    public static Location[][] locations = new Location[Settings.WIDTH][Settings.HEIGHT];
+    public static Location[][] island = new Location[Settings.WIDTH][Settings.HEIGHT];
     public static void start() {
-        for (int i = 0; i < locations.length; i++) {
-            for (int j = 0; j < locations[i].length; j++) {
+        for (int i = 0; i < island.length; i++) {
+            for (int j = 0; j < island[i].length; j++) {
                 ArrayList<Animal> animals = new ArrayList<>();
                 ArrayList<Plant> plants = new ArrayList<>();
                 for (Map.Entry<Class<?>, Integer> entry : Settings.ANIMALS_COUNT.entrySet()) {
@@ -19,7 +20,7 @@ public class Simulation {
                     createAnimalList(animals, animal, count);
                 }
                 createPlantList(plants);
-                locations[i][j] = new Location(
+                island[i][j] = new Location(
                         animals,
                         plants,
                         i, j, UUID.randomUUID()
@@ -31,10 +32,14 @@ public class Simulation {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                for (Location[] location : locations) {
+                for (Location[] location : island) {
                     for (Location value : location) {
                         for (Animal animal : value.animals) {
-                            animal.eat(animal, value);
+                            if (animal instanceof Herbivores) {
+                                ((Herbivores) animal).herbivoresEat(animal, value);
+                            } else {
+                                ((Predator) animal).predatorEat(animal, value);
+                            }
                         }
                     }
                 }
@@ -44,25 +49,25 @@ public class Simulation {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                for (Location[] location : locations) {
+                for (Location[] location : island) {
                     for (Location value : location) {
                         createPlantList(value.plants);
                     }
                 }
             }
-        }, 2000, 2000);
+        }, 0, 2000);
 
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                for (Location[] location : locations) {
+                for (Location[] location : island) {
                     for (Location value : location) {
                         ArrayList<Animal> uniqueAnimals = new ArrayList<>();
                         ArrayList<Animal> animals = value.animals;
                         for (Animal item : animals) {
                             boolean found = false;
                             for (Animal animal : uniqueAnimals) {
-                                if (animal.image.equals(item.image)) {
+                                if (animal.emoji.equals(item.emoji)) {
                                     found = true;
                                     break;
                                 }
@@ -77,33 +82,33 @@ public class Simulation {
                     }
                 }
             }
-        }, 4000, 4000);
+        }, 0, 4000);
 
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Location[][] copyArray = Arrays.stream(locations).map(Location[]::clone).toArray(Location[][]::new);
+                Location[][] copyArray = Arrays.stream(island).map(Location[]::clone).toArray(Location[][]::new);
                 for (int i = 0; i < copyArray.length; i++) {
                     for (int j = 0; j < copyArray[i].length; j++) {
                         for (int k = 0; k < copyArray[i][j].animals.size(); k++) {
-                            Animal animal = locations[i][j].animals.get(k);
-                            animal.move(animal, locations[i][j]);
+                            Animal animal = island[i][j].animals.get(k);
+                            animal.move(animal, island[i][j]);
                         }
                     }
                 }
             }
-        }, 6000, 6000);
+        }, 0, 8000);
 
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 Simulation.showResult();
             }
-        }, 2000, 2000);
+        }, 0, 1000);
     }
 
     public static void showResult() {
-        for (Location[] location : locations) {
+        for (Location[] location : island) {
             for (Location value : location) {
                 System.out.print(value.getObjects() + " ");
             }
@@ -114,8 +119,15 @@ public class Simulation {
 
     public static void createAnimalList(ArrayList<Animal> animals, Class<?> animal, Integer count) {
         try {
+            Animal currentAnimal = (Animal) animal.getDeclaredConstructor(UUID.class).newInstance(UUID.randomUUID());
+            long countOfCurrentAnimalsInLocation = animals.stream()
+                    .filter(a-> a.name.equals(currentAnimal.name))
+                    .count();
             for (int i = 0; i < count; i++) {
-                animals.add((Animal) animal.getDeclaredConstructor(UUID.class).newInstance(UUID.randomUUID()));
+                if (countOfCurrentAnimalsInLocation < currentAnimal.maxAnimalsCountInLocation) {
+                    countOfCurrentAnimalsInLocation++;
+                    animals.add((Animal) animal.getDeclaredConstructor(UUID.class).newInstance(UUID.randomUUID()));
+                }
             }
         } catch (Exception e) {
             System.out.println("Failed to create Animal: " + e.getMessage());
@@ -124,7 +136,9 @@ public class Simulation {
 
     private static void createPlantList(ArrayList<Plant> plants) {
         for (int i = 0; i < Settings.PLANTS_COUNT; i++) {
-            plants.add(new Plant(UUID.randomUUID()));
+            if (plants.size() < Settings.maxPlantsCountInLocation) {
+                plants.add(new Plant(UUID.randomUUID()));
+            }
         }
     }
 }

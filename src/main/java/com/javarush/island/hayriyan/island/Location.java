@@ -1,8 +1,6 @@
-package com.javarush.island.hayriyan.simulation;
-
-import com.javarush.island.hayriyan.Plant;
+package com.javarush.island.hayriyan.island;
+import com.javarush.island.hayriyan.objects.Plant;
 import com.javarush.island.hayriyan.abstracts.Animal;
-
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -24,8 +22,8 @@ public class Location {
 
     public ArrayList<String> getObjects() {
         ArrayList<String> result = new ArrayList<>();
-        animals.forEach((animal) -> result.add(animal.image));
-        plants.forEach((animal) -> result.add(animal.image));
+        animals.forEach((animal) -> result.add(animal.emoji));
+        plants.forEach((animal) -> result.add(animal.emoji));
         return result;
     }
 }

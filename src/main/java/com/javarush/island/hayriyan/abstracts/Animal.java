@@ -1,30 +1,42 @@
 package com.javarush.island.hayriyan.abstracts;
-
-import com.javarush.island.hayriyan.simulation.Location;
-import com.javarush.island.hayriyan.simulation.Settings;
-import com.javarush.island.hayriyan.simulation.Simulation;
-
+import com.javarush.island.hayriyan.island.Location;
+import com.javarush.island.hayriyan.config.Settings;
+import com.javarush.island.hayriyan.island.Simulation;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-public abstract class Animal {
-    public UUID id;
-
-    public String name;
+public abstract class Animal extends IslandObject {
     public Double satisfiedKg;
-    public String image;
-
-    public Double weight;
 
     public Double minimumWeight;
 
     public Integer maxMoveCount;
-    abstract public void eat(Animal animal, Location location);
+
+    public Integer maxAnimalsCountInLocation;
+    public void eat(Animal animal, Location location, ArrayList<IslandObject> objects) {
+        IslandObject objectToEat = null;
+        if (!objects.isEmpty()) {
+            objectToEat = getPriorityObject(objects, animal);
+        }
+
+        if (objectToEat != null) {
+            double amountToEat = Math.min(objectToEat.weight, animal.satisfiedKg);
+            animal.weight += amountToEat;
+            objectToEat.die(objectToEat, location);
+        } else {
+            animal.weight -= animal.weight / 10;
+        }
+
+        if (animal.weight <= animal.minimumWeight) {
+            animal.die(animal, location);
+        }
+    };
     public void move(Animal animal, Location location) {
         int movesToAdd = ThreadLocalRandom.current().nextInt(animal.maxMoveCount + 1);
-        location.animals.removeIf(a -> a.id == animal.id);
         int newX = location.x;
         int newY = location.y;
         for (int i = 0; i < movesToAdd; i++) {
@@ -36,7 +48,10 @@ public abstract class Animal {
                 newX++;
             }
         }
-        Simulation.locations[newX][newY].animals.add(animal);
+        if (Simulation.island[newX][newY].animals.size() < animal.maxAnimalsCountInLocation) {
+            location.animals.removeIf(a -> a.id == animal.id);
+            Simulation.island[newX][newY].animals.add(animal);
+        }
     }
     public void multiply(Animal animal, ArrayList<Animal> animals) {
         try {
@@ -44,15 +59,47 @@ public abstract class Animal {
                     .filter(a -> a.name.equals(animal.name))
                     .collect(Collectors.toCollection(ArrayList::new));
 
-            int count = sameAnimals.size() / 2;
+            int animalsCount = sameAnimals.size();
+            int count = animalsCount / 2;
             for (int i = 0; i < count; i++) {
-                animals.add(animal.getClass().getConstructor(UUID.class).newInstance(UUID.randomUUID()));
+                if (animalsCount < animal.maxAnimalsCountInLocation) {
+                    animalsCount ++;
+                    animals.add(animal.getClass().getConstructor(UUID.class).newInstance(UUID.randomUUID()));
+                }
             }
         } catch (Exception e) {
             System.out.println("Failed to create Animal: " + e.getMessage());
         }
     }
-    public void die(Animal animal, Location location) {
-        location.animals = location.animals.stream().filter(a -> a.id != animal.id).collect(Collectors.toCollection(ArrayList::new));
+
+    private IslandObject getPriorityObject(List<IslandObject> objects, Animal animal) {
+        Map<String, Integer> currentPredatorPriority = Settings.ANIMAL_EATING_PRIORITY.get(animal.name);
+        if (currentPredatorPriority == null) {
+            return null;
+        }
+
+        int randomInt = ThreadLocalRandom.current().nextInt(101);
+        IslandObject object = null;
+        int maxPriority = 0;
+
+        for (IslandObject h : objects) {
+            Integer priority = currentPredatorPriority.get(h.name);
+            if (priority != null && priority >= maxPriority && priority >= randomInt) {
+                object = h;
+                maxPriority = priority;
+            }
+        }
+
+        if (object == null) {
+            for (IslandObject h : objects) {
+                Integer priority = currentPredatorPriority.get(h.name);
+                if (priority != null) {
+                    object = h;
+                    break;
+                }
+            }
+        }
+
+        return object;
     }
 }
