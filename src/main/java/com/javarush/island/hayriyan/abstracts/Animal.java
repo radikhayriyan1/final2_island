@@ -34,7 +34,7 @@ public abstract class Animal extends IslandObject {
         if (animal.weight <= animal.minimumWeight) {
             animal.die(animal, location);
         }
-    };
+    }
     public void move(Animal animal, Location location) {
         int movesToAdd = ThreadLocalRandom.current().nextInt(animal.maxMoveCount + 1);
         int newX = location.x;
