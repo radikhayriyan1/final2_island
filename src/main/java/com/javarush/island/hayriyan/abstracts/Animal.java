@@ -2,21 +2,12 @@ package com.javarush.island.hayriyan.abstracts;
 import com.javarush.island.hayriyan.island.Location;
 import com.javarush.island.hayriyan.config.Settings;
 import com.javarush.island.hayriyan.island.Simulation;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import com.javarush.island.hayriyan.utils.Helper;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public abstract class Animal extends IslandObject {
-    public Double satisfiedKg;
-
-    public Double minimumWeight;
-
-    public Integer maxMoveCount;
-
-    public Integer maxAnimalsCountInLocation;
     public void eat(Animal animal, Location location, ArrayList<IslandObject> objects) {
         IslandObject objectToEat = null;
         if (!objects.isEmpty()) {
@@ -24,19 +15,19 @@ public abstract class Animal extends IslandObject {
         }
 
         if (objectToEat != null) {
-            double amountToEat = Math.min(objectToEat.weight, animal.satisfiedKg);
-            animal.weight += amountToEat;
+            double amountToEat = Math.min(objectToEat.weight, (Double) Helper.getObjectsStaticPropertyByName(animal, "satisfiedKg"));
+            animal.weight += amountToEat / 10;
             objectToEat.die(objectToEat, location);
         } else {
             animal.weight -= animal.weight / 10;
         }
 
-        if (animal.weight <= animal.minimumWeight) {
+        if (animal.weight <= (Double) Helper.getObjectsStaticPropertyByName(animal, "minimumWeight")) {
             animal.die(animal, location);
         }
     }
     public void move(Animal animal, Location location) {
-        int movesToAdd = ThreadLocalRandom.current().nextInt(animal.maxMoveCount + 1);
+        int movesToAdd = ThreadLocalRandom.current().nextInt((Integer) Helper.getObjectsStaticPropertyByName(animal, "maxMoveCount") + 1);
         int newX = location.x;
         int newY = location.y;
         for (int i = 0; i < movesToAdd; i++) {
@@ -48,7 +39,7 @@ public abstract class Animal extends IslandObject {
                 newX++;
             }
         }
-        if (Simulation.island[newX][newY].animals.size() < animal.maxAnimalsCountInLocation) {
+        if (Simulation.island[newX][newY].animals.size() < (Integer) Helper.getObjectsStaticPropertyByName(animal, "maxAnimalsCountInLocation")) {
             location.animals.removeIf(a -> a.id == animal.id);
             Simulation.island[newX][newY].animals.add(animal);
         }
@@ -56,13 +47,13 @@ public abstract class Animal extends IslandObject {
     public void multiply(Animal animal, ArrayList<Animal> animals) {
         try {
             ArrayList<Animal> sameAnimals = animals.stream()
-                    .filter(a -> a.name.equals(animal.name))
+                    .filter(a -> Objects.equals(Helper.getObjectsStaticPropertyByName(a, "name"), Helper.getObjectsStaticPropertyByName(animal, "name")))
                     .collect(Collectors.toCollection(ArrayList::new));
 
             int animalsCount = sameAnimals.size();
             int count = animalsCount / 2;
             for (int i = 0; i < count; i++) {
-                if (animalsCount < animal.maxAnimalsCountInLocation) {
+                if (animalsCount < (Integer) Helper.getObjectsStaticPropertyByName(animal, "maxAnimalsCountInLocation")) {
                     animalsCount ++;
                     animals.add(animal.getClass().getConstructor(UUID.class).newInstance(UUID.randomUUID()));
                 }
@@ -73,7 +64,7 @@ public abstract class Animal extends IslandObject {
     }
 
     private IslandObject getPriorityObject(List<IslandObject> objects, Animal animal) {
-        Map<String, Integer> currentPredatorPriority = Settings.ANIMAL_EATING_PRIORITY.get(animal.name);
+        Map<String, Integer> currentPredatorPriority = Settings.ANIMAL_EATING_PRIORITY.get(Helper.getObjectsStaticPropertyByName(animal, "name"));
         if (currentPredatorPriority == null) {
             return null;
         }
@@ -83,7 +74,7 @@ public abstract class Animal extends IslandObject {
         int maxPriority = 0;
 
         for (IslandObject h : objects) {
-            Integer priority = currentPredatorPriority.get(h.name);
+            Integer priority = currentPredatorPriority.get(Helper.getObjectsStaticPropertyByName(h, "name"));
             if (priority != null && priority >= maxPriority && priority >= randomInt) {
                 object = h;
                 maxPriority = priority;
@@ -92,7 +83,7 @@ public abstract class Animal extends IslandObject {
 
         if (object == null) {
             for (IslandObject h : objects) {
-                Integer priority = currentPredatorPriority.get(h.name);
+                Integer priority = currentPredatorPriority.get(Helper.getObjectsStaticPropertyByName(h, "name"));
                 if (priority != null) {
                     object = h;
                     break;

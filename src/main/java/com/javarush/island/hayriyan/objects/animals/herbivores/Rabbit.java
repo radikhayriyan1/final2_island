@@ -1,13 +1,20 @@
 package com.javarush.island.hayriyan.objects.animals.herbivores;
 import com.javarush.island.hayriyan.abstracts.animals.Herbivores;
-import com.javarush.island.hayriyan.utils.InitAnimal;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class Rabbit extends Herbivores {
 
-    public static final String animalName = "rabbit";
+    public static final HashMap<String, Object> characteristics = new HashMap<>() {{
+        put("emoji", "\uD83D\uDC07");
+        put("satisfiedKg", 0.45);
+        put("minimumWeight", 1.5);
+        put("name", "rabbit");
+        put("maxMoveCount", 2);
+        put("maxAnimalsCountInLocation", 150);
+    }};
     public Rabbit(UUID id) {
         this.id = id;
-        InitAnimal.initializeAnimal(this, "\uD83D\uDC07", 0.45, 2.0, 1.5, "rabbit", 2, 150);
+        this.weight = 2.0;
     }
 }
