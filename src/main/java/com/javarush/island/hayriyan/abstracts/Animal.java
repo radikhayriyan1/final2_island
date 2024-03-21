@@ -8,6 +8,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public abstract class Animal extends IslandObject {
+
     public void eat(Animal animal, Location location, ArrayList<IslandObject> objects) {
         IslandObject objectToEat = null;
         if (!objects.isEmpty()) {
@@ -26,6 +27,7 @@ public abstract class Animal extends IslandObject {
             animal.die(animal, location);
         }
     }
+
     public void move(Animal animal, Location location) {
         int movesToAdd = ThreadLocalRandom.current().nextInt((Integer) Helper.getObjectsStaticPropertyByName(animal, "maxMoveCount") + 1);
         int newX = location.x;
@@ -44,6 +46,7 @@ public abstract class Animal extends IslandObject {
             Simulation.island[newX][newY].animals.add(animal);
         }
     }
+
     public void multiply(Animal animal, ArrayList<Animal> animals) {
         try {
             ArrayList<Animal> sameAnimals = animals.stream()
@@ -62,6 +65,7 @@ public abstract class Animal extends IslandObject {
             System.out.println("Failed to create Animal: " + e.getMessage());
         }
     }
+
 
     private IslandObject getPriorityObject(List<IslandObject> objects, Animal animal) {
         Map<String, Integer> currentPredatorPriority = Settings.ANIMAL_EATING_PRIORITY.get(Helper.getObjectsStaticPropertyByName(animal, "name"));

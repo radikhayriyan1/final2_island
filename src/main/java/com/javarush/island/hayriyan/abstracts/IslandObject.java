@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 public abstract class IslandObject {
     public UUID id;
     public Double weight;
+
     public void die(IslandObject islandObject, Location location) {
         if (islandObject instanceof Plant) {
             location.plants = location.plants.stream()

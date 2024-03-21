@@ -1,6 +1,5 @@
 package com.javarush.island.hayriyan.objects;
 import com.javarush.island.hayriyan.abstracts.IslandObject;
-
 import java.util.HashMap;
 import java.util.UUID;
 

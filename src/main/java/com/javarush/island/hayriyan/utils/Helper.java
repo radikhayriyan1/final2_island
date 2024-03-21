@@ -2,7 +2,6 @@ package com.javarush.island.hayriyan.utils;
 import com.javarush.island.hayriyan.abstracts.Animal;
 import com.javarush.island.hayriyan.abstracts.IslandObject;
 import com.javarush.island.hayriyan.anotations.CanEat;
-
 import java.util.Arrays;
 import java.util.HashMap;
 

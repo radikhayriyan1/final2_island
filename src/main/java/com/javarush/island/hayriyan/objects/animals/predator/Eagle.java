@@ -5,17 +5,17 @@ import java.util.HashMap;
 import java.util.UUID;
 
 @CanEat({"fox"})
-public class Boa extends Predator {
+public class Eagle extends Predator {
     public static final HashMap<String, Object> characteristics = new HashMap<>() {{
-        put("emoji", "\uD83D\uDC0D");
-        put("satisfiedKg", 3.0);
-        put("minimumWeight", 10.0);
-        put("name", "boa");
-        put("maxMoveCount", 1);
-        put("maxAnimalsCountInLocation", 30);
+        put("emoji", "\uD83E\uDD85");
+        put("satisfiedKg", 1.0);
+        put("minimumWeight", 4.0);
+        put("name", "eagle");
+        put("maxMoveCount", 3);
+        put("maxAnimalsCountInLocation", 20);
     }};
-    public Boa(UUID id) {
+    public Eagle(UUID id) {
         this.id = id;
-        this.weight = 15.0;
+        this.weight = 6.0;
     }
 }
