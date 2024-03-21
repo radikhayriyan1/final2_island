@@ -1,6 +1,8 @@
 package com.javarush.island.hayriyan.config;
 import com.javarush.island.hayriyan.objects.animals.herbivores.Goat;
 import com.javarush.island.hayriyan.objects.animals.herbivores.Rabbit;
+import com.javarush.island.hayriyan.objects.animals.predator.Boa;
+import com.javarush.island.hayriyan.objects.animals.predator.Fox;
 import com.javarush.island.hayriyan.objects.animals.predator.Wolf;
 import com.javarush.island.hayriyan.objects.Plant;
 import java.util.*;
@@ -12,18 +14,26 @@ public class Settings {
     public static final Integer maxPlantsCountInLocation = 200;
     public static final Integer STOP_SIMULATION_TIME = 10;
     public static final Map<Class<?>, Integer> ANIMALS_COUNT = new HashMap<>() {{
-        put(Wolf.class, 4);
-        put(Goat.class, 4);
+//        put(Wolf.class, 2);
+//        put(Goat.class, 2);
         put(Rabbit.class, 4);
+        put(Boa.class, 2);
+        put(Fox.class, 4);
     }};
 
     public static final Map<String, Map<String, Integer>> ANIMAL_EATING_PRIORITY = new HashMap<>() {{
-        put((String)Wolf.characteristics.get("name"), new HashMap<>() {{
-            put((String)Rabbit.characteristics.get("name"), 60);
-            put((String)Goat.characteristics.get("name"), 60);
+        put((String) Wolf.characteristics.get("name"), new HashMap<>() {{
+            put((String) Rabbit.characteristics.get("name"), 60);
+            put((String) Goat.characteristics.get("name"), 60);
         }});
-        put((String)Rabbit.characteristics.get("name"), new HashMap<>() {{
-            put((String)Plant.characteristics.get("name"), 100);
+        put((String) Rabbit.characteristics.get("name"), new HashMap<>() {{
+            put((String) Plant.characteristics.get("name"), 100);
+        }});
+        put((String) Boa.characteristics.get("name"), new HashMap<>() {{
+            put((String) Fox.characteristics.get("name"), 15);
+        }});
+        put((String) Fox.characteristics.get("name"), new HashMap<>() {{
+            put((String) Rabbit.characteristics.get("name"), 70);
         }});
     }};
 }
