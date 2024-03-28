@@ -42,7 +42,7 @@ public class ThreadService {
     }
 
     private static void addPlants() {
-        ScheduledExecutorService plantExecutor = Executors.newScheduledThreadPool(Settings.WIDTH * Settings.HEIGHT + 1);
+        ScheduledExecutorService plantExecutor = Executors.newScheduledThreadPool(Settings.WIDTH * Settings.HEIGHT);
         for (Location[] location : island) {
             for (Location value : location) {
                 plantExecutor.schedule(() -> {
